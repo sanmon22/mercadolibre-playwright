@@ -58,3 +58,15 @@ test('login', async ({ page }) => {
 
     expect(page.locator('.inventory_list')).toBeVisible();
 })
+
+test('add item to cart', async ({ page }) => {
+    await page.goto('https://www.saucedemo.com/');
+    const loginObject = new LoginPage(page);
+
+    await loginObject.loginWithCredentials('standard_user', 'secret_sauce')
+
+    await loginObject.selectRandomProduct();
+
+    expect(page.locator('[data-test="shopping-cart-badge"]')).toHaveText('1');
+
+})
