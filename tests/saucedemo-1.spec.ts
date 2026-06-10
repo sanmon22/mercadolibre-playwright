@@ -21,7 +21,7 @@ test('purchase_flow_old', async ({ page }) => {
     const expectedPrice = await randomItem.locator('.inventory_item_price').innerText();
 
     // console.log(`Name: ${expectedName}, Description: ${expectedDescription}, Price: ${expectedPrice}`);
-    
+
     await randomItem.getByRole('button', { name: 'Add to cart' }).click();
     // await randomItem1.getByRole('button', { name: 'Add to cart' }).click();
     // await randomItem2.getByRole('button', { name: 'Add to cart' }).click();
@@ -32,17 +32,17 @@ test('purchase_flow_old', async ({ page }) => {
 
     const itemsCartNames = await page.locator('#cart_contents_container .inventory_item_name').all();
 
-    for(const item of itemsCartNames){
+    for (const item of itemsCartNames) {
         const currentName = await item.innerText();
         expect(expectedName).toEqual(currentName)
     }
-        
+
     await page.locator('[data-test="checkout"]').click();
 
     await page.getByRole('textbox', { name: 'First Name' }).fill('Santiago');
     await page.getByRole('textbox', { name: 'Last Name' }).fill('Monrroy');
     await page.getByRole('textbox', { name: 'Zip/Postal Code' }).fill('221122');
-    
+
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.getByRole('button', { name: 'Finish' }).click();
 
@@ -69,4 +69,28 @@ test('add item to cart', async ({ page }) => {
 
     expect(page.locator('[data-test="shopping-cart-badge"]')).toHaveText('1');
 
+})
+
+test('go to checkout', async ({ page }) => {
+    await page.goto('https://www.saucedemo.com/');
+    const loginObject = new LoginPage(page);
+
+    await loginObject.loginWithCredentials('standard_user', 'secret_sauce')
+
+    await loginObject.selectRandomProduct();
+
+    await loginObject.clickOnCart();
+
+    expect(page.locator('.header_secondary_container')).toContainText('Checkout');
+    await loginObject.clickOnCheckout();
+
+    await loginObject.fillCheckoutInfo('Santiago', 'Monrroy', '221122')
+
+    await loginObject.clickOnContinue();
+
+    await loginObject.clickOnFinish();
+
+    await loginObject.clickOnBackToHomeButton();
+
+    expect(page.locator('.header_secondary_container')).toContainText('Products');
 })
